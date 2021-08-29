@@ -1,0 +1,161 @@
+MPASM  5.03                    KNIGHT RLF.ASM   7-6-2012  20:48:20         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001                    
+                      00002           ;************************************************************             
+                      00003                   ;      LED RUN (using rlf & rrf commands)  
+                      00004                 ;written by achala samapriya( micro house ) 
+                      00005                             ;started on 2007/01/30   
+                      00006           ;************************************************************** 
+                      00007  
+                      00008              processor PIC16F84A     ;Set the processor 
+                      00009        radix hex               ;Set the radix 
+                      00010        #include <p16F84A.inc>  ;Include header file 
+                      00001         LIST
+                      00002 ; P16F84A.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                      00134         LIST
+2007   3FFB           00011   __CONFIG _RC_OSC & _PWRTE_OFF & _CP_OFF & _WDT_OFF 
+                      00012  
+0000                  00013 Start     ORG 0x00 
+                      00014  
+0000   1683           00015     BANKSEL TRISA      ; SELECT BANK 1 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0001   0185           00016     CLRF TRISA         ; MAKE PORTA AN OUTPUT 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0002   0186           00017     CLRF TRISB         ; MAKE PORTB AN OUTPUT 
+0003   1283           00018     BANKSEL PORTA      ; SELECT BANK 1 
+0004   3001           00019     MOVLW 0X01 
+0005   0086           00020     MOVWF PORTB 
+0006                  00021 LEFT 
+0006   2012           00022     CALL DELAY 
+0007   0D86           00023     RLF PORTB,1 
+0008   2012           00024     CALL DELAY 
+0009   1F86           00025     BTFSS PORTB,7  
+000A   2806           00026     GOTO LEFT 
+000B   280C           00027     GOTO RIGHT 
+000C                  00028 RIGHT 
+000C   2012           00029     CALL DELAY 
+000D   0C86           00030     RRF PORTB,1 
+000E   2012           00031     CALL DELAY 
+000F   1C06           00032     BTFSS PORTB,0 
+0010   280C           00033     GOTO RIGHT 
+0011   2806           00034     GOTO LEFT  
+                      00035    
+                      00036    
+                      00037  
+0012                  00038 DELAY 
+0012   3029           00039          MOVLW 0X29 ;DELAY FOR 10mS ( These timing were based on 4Mhz x'tal) 
+0013   008C           00040          MOVWF 0CH 
+0014   0B8C           00041 S2      DECFSZ 0CH,1 
+0015   2817           00042          GOTO DELAY2.1 
+0016   0008           00043          RETURN  
+0017   3052           00044 DELAY2.1 MOVLW 52H 
+0018   008D           00045          MOVWF 0DH 
+0019   0B8D           00046 S1     DECFSZ 0DH,1 
+001A   2819           00047          GOTO S1  
+001B   2814           00048          GOTO S2 
+MPASM  5.03                    KNIGHT RLF.ASM   7-6-2012  20:48:20         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00049            END    
+MPASM  5.03                    KNIGHT RLF.ASM   7-6-2012  20:48:20         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+DC                                00000001
+DELAY                             00000012
+DELAY2.1                          00000017
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+LEFT                              00000006
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RIGHT                             0000000C
+RP0                               00000005
+RP1                               00000006
+S1                                00000019
+S2                                00000014
+STATUS                            00000003
+Start                             00000000
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+MPASM  5.03                    KNIGHT RLF.ASM   7-6-2012  20:48:20         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+Z                                 00000002
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84A                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXX---- ---------------- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    28
+Program Memory Words Free:   996
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     2 reported,     0 suppressed
+
+
