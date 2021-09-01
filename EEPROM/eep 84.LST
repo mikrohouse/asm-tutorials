@@ -1,0 +1,204 @@
+MPASM  5.03                        EEP 84.ASM   7-9-2012  11:28:08         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 
+                      00002                       
+                      00003          ;************************************************************            
+                      00004                              ;  EEPROM  DEMO
+                      00005                             ;written by achala samapriya
+                      00006                              ;started on 2006/04/08  
+                      00007         ;**************************************************************
+                      00008 
+                      00009                 processor PIC16F84A     ;Set the processor
+                      00010                                 radix hex               ;Set the radix
+                      00011                                 #include <p16F84A.inc>  ;Include header file
+                      00001         LIST
+                      00002 ; P16F84A.INC  Standard Header File, Version 2.00    Microchip Technology, Inc.
+                      00134         LIST
+                      00012         
+2007   3FF9           00013                 __CONFIG _XT_OSC & _PWRTE_OFF & _CP_OFF & _WDT_OFF
+                      00014 
+                      00015 
+0000                  00016  ORG 0x00
+0000   2801           00017         GOTO MAIN
+                      00018 
+                      00019 
+  0000000C            00020 CNT       EQU   0x0C
+                      00021 
+0001                  00022 MAIN
+                      00023 
+0001   1683           00024    BANKSEL TRISA 
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0002   0186           00025    CLRF  TRISB
+0003   30FF           00026    MOVLW 0XFF
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0004   0085           00027    MOVWF TRISA      ;PORTA AS AN INPUT
+0005   0185           00028    CLRF PORTA       ;SET BOTH AS OUT PUTS
+0006   0186           00029    CLRF PORTB
+                      00030 
+                      00031    
+0007   1283           00032          BANKSEL EEADR           ;EEPROM READING FOR PROGRAM 1
+0008   3000           00033          MOVLW 0X00                ;READ EEPROM 0H
+0009   0089           00034          MOVWF EEADR
+000A   1683           00035          BANKSEL EECON1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000B   1408           00036          BSF EECON1,RD
+000C   1283           00037          BANKSEL EEDATA
+000D   0808           00038          MOVF EEDATA,W
+000E   1283           00039          BANKSEL CNT
+000F   008C           00040          MOVWF   CNT
+                      00041    
+0010                  00042 CNTLOOP
+0010   0A8C           00043         INCF CNT,1
+0011   080C           00044         MOVF CNT,W
+0012   0086           00045         MOVWF PORTB
+0013   202D           00046         CALL DELAY
+0014   1805           00047         BTFSC PORTA,0
+MPASM  5.03                        EEP 84.ASM   7-9-2012  11:28:08         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0015   2810           00048         GOTO CNTLOOP 
+0016   1C05           00049         BTFSS PORTA,0
+0017   2816           00050         GOTO $-1
+0018   1283           00051         BANKSEL INTCON
+0019   138B           00052         BCF INTCON,GIE
+001A   1283           00053         BANKSEL EEADR
+001B   3000           00054         MOVLW 0X00
+001C   0089           00055         MOVWF EEADR
+001D   1283           00056         BANKSEL CNT
+001E   080C           00057         MOVF CNT,0 
+001F   1283           00058         BANKSEL EEDATA                ;DATA TO EEPROM LOCATION 01
+0020   0088           00059         MOVWF EEDATA
+0021   1683           00060         BANKSEL EECON1  
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0022   1508           00061         BSF EECON1,WREN
+0023   3055           00062         MOVLW 0X55
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0024   0089           00063         MOVWF EECON2
+0025   30AA           00064         MOVLW 0XAA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0026   0089           00065         MOVWF EECON2
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0027   1488           00066         BSF EECON1,WR
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0028   1888           00067 WR4     BTFSC EECON1,WR
+0029   2828           00068         GoTo WR4
+002A   1283           00069         BANKSEL INTCON
+002B   178B           00070         BSF INTCON,GIE                               
+002C   2810           00071         GOTO CNTLOOP           
+                      00072                           
+002D                  00073 DELAY
+002D   30FF           00074          MOVLW 0XFF ;DELAY FOR SCAN
+002E   008D           00075          MOVWF 0X0D
+002F   0B8D           00076 S2       DECFSZ 0X0D,1
+0030   2832           00077          GOTO DELAY2.1
+0031   0008           00078          RETURN 
+0032   30FF           00079 DELAY2.1 MOVLW 0XFF
+0033   008E           00080          MOVWF 0X0E
+0034   0B8E           00081 S1       DECFSZ 0X0E,1
+0035   2834           00082          GOTO S1        
+0036   282F           00083          GOTO S2   
+                      00084 
+                      00085     END   
+MPASM  5.03                        EEP 84.ASM   7-9-2012  11:28:08         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+CNT                               0000000C
+CNTLOOP                           00000010
+DC                                00000001
+DELAY                             0000002D
+DELAY2.1                          00000032
+EEADR                             00000009
+EECON1                            00000088
+EECON2                            00000089
+EEDATA                            00000008
+EEIE                              00000006
+EEIF                              00000004
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+INDF                              00000000
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IRP                               00000007
+MAIN                              00000001
+NOT_PD                            00000003
+NOT_RBPU                          00000007
+NOT_TO                            00000004
+OPTION_REG                        00000081
+PCL                               00000002
+PCLATH                            0000000A
+PORTA                             00000005
+PORTB                             00000006
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RBIE                              00000003
+RBIF                              00000000
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+S1                                00000034
+S2                                0000002F
+STATUS                            00000003
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+TMR0                              00000001
+TRISA                             00000085
+TRISB                             00000086
+W                                 00000000
+WR                                00000001
+WR4                               00000028
+WREN                              00000002
+MPASM  5.03                        EEP 84.ASM   7-9-2012  11:28:08         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+WRERR                             00000003
+Z                                 00000002
+_CP_OFF                           00003FFF
+_CP_ON                            0000000F
+_HS_OSC                           00003FFE
+_LP_OSC                           00003FFC
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FF7
+_RC_OSC                           00003FFF
+_WDT_OFF                          00003FFB
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FFD
+__16F84A                          00000001
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX---------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:    55
+Program Memory Words Free:   969
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     8 reported,     0 suppressed
+
+

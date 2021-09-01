@@ -1,0 +1,85 @@
+,,,
+,,,
+,,,         ;************************************************************
+,,,                             ;  EEPROM  DEMO
+,,,                            ;written by achala samapriya
+,,,                             ;started on 2006/04/08
+,,,        ;**************************************************************
+,,,
+,,,                processor PIC16F84A     ;Set the processor
+,,,                                radix hex               ;Set the radix
+,,,                                #include <p16F84A.inc>  ;Include header file
+,,,
+00002007,3FF9,,                __CONFIG _XT_OSC & _PWRTE_OFF & _CP_OFF & _WDT_OFF
+,,,
+,,,
+00000000,,, ORG 0x00
+00000000,2801,,        GOTO MAIN
+,,,
+,,,
+,,,CNT       EQU   0x0C
+,,,
+00000001,,MAIN,MAIN
+,,,
+00000001,1683,,   BANKSEL TRISA
+00000002,0186,,   CLRF  TRISB
+00000003,30FF,,   MOVLW 0XFF
+00000004,0085,,   MOVWF TRISA      ;PORTA AS AN INPUT
+00000005,0185,,   CLRF PORTA       ;SET BOTH AS OUT PUTS
+00000006,0186,,   CLRF PORTB
+,,,
+,,,
+00000007,1283,,         BANKSEL EEADR           ;EEPROM READING FOR PROGRAM 1
+00000008,3000,,         MOVLW 0X00                ;READ EEPROM 0H
+00000009,0089,,         MOVWF EEADR
+0000000A,1683,,         BANKSEL EECON1
+0000000B,1408,,         BSF EECON1,RD
+0000000C,1283,,         BANKSEL EEDATA
+0000000D,0808,,         MOVF EEDATA,W
+0000000E,1283,,         BANKSEL CNT
+0000000F,008C,,         MOVWF   CNT
+,,,
+00000010,,CNTLOOP,CNTLOOP
+00000010,0A8C,,        INCF CNT,1
+00000011,080C,,        MOVF CNT,W
+00000012,0086,,        MOVWF PORTB
+00000013,202D,,        CALL DELAY
+00000014,1805,,        BTFSC PORTA,0
+00000015,2810,,        GOTO CNTLOOP
+00000016,1C05,,        BTFSS PORTA,0
+00000017,2816,,        GOTO $-1
+00000018,1283,,        BANKSEL INTCON
+00000019,138B,,        BCF INTCON,GIE
+0000001A,1283,,        BANKSEL EEADR
+0000001B,3000,,        MOVLW 0X00
+0000001C,0089,,        MOVWF EEADR
+0000001D,1283,,        BANKSEL CNT
+0000001E,080C,,        MOVF CNT,0
+0000001F,1283,,        BANKSEL EEDATA                ;DATA TO EEPROM LOCATION 01
+00000020,0088,,        MOVWF EEDATA
+00000021,1683,,        BANKSEL EECON1
+00000022,1508,,        BSF EECON1,WREN
+00000023,3055,,        MOVLW 0X55
+00000024,0089,,        MOVWF EECON2
+00000025,30AA,,        MOVLW 0XAA
+00000026,0089,,        MOVWF EECON2
+00000027,1488,,        BSF EECON1,WR
+00000028,1888,WR4,WR4     BTFSC EECON1,WR
+00000029,2828,,        GoTo WR4
+0000002A,1283,,        BANKSEL INTCON
+0000002B,178B,,        BSF INTCON,GIE
+0000002C,2810,,        GOTO CNTLOOP
+,,,
+0000002D,,DELAY,DELAY
+0000002D,30FF,,         MOVLW 0XFF ;DELAY FOR SCAN
+0000002E,008D,,         MOVWF 0X0D
+0000002F,0B8D,S2,S2       DECFSZ 0X0D,1
+00000030,2832,,         GOTO DELAY2.1
+00000031,0008,,         RETURN
+00000032,30FF,DELAY2.1,DELAY2.1 MOVLW 0XFF
+00000033,008E,,         MOVWF 0X0E
+00000034,0B8E,S1,S1       DECFSZ 0X0E,1
+00000035,2834,,         GOTO S1
+00000036,282F,,         GOTO S2
+,,,
+,,,    END
